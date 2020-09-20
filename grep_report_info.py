@@ -39,10 +39,10 @@ TB_botton = False
 mycoplasma_botton = False
 data_start = False
 
+sample_type = ""
+halos_id = ""
 
-
-
-info=[]
+info = []
 microorganism_name = ""
 genus = ""
 gram_stain = ""
@@ -50,14 +50,14 @@ top_type = ""
 chinses_name = ""
 description = ""
 
-basic_info_dict={}
-discription_dic={}
-reference_dict={}
+basic_info_dict = {}
+discription_dic = {}
+reference_dict = {}
 
 ref_count = 1
-PMID=""
-reference=""
-reference_text=""
+PMID = ""
+reference = ""
+reference_text = ""
 reference_list = ""
 reference1 = ""
 reference2 = ""
@@ -74,11 +74,12 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
         #print(tradition_cn )
         #pattern = '樣本型別：'
         if r'樣本型別：' in tradition_cn:
-            regex = re.compile(r'樣本型別：(.+)?\&')
-            match = regex.search(tradition_cn)
-            #m = re.match(r'www\.(.+)\.com', 'www.xxx.com')
-            sample_type = match.group(1)
-            #print(sample_type)
+            if r'樣本編號：' in tradition_cn:
+                regex = re.compile(r'樣本編號：(.+)? \& 樣本型別：(.+)? \&')
+                match = regex.search(tradition_cn)
+                sample_type = match.group(2)
+                halos_id = match.group(1)
+                #print(halos_id,sample_type)
         
         if r'檢出細菌列表' in tradition_cn:
             bacteria_botton = True
@@ -131,6 +132,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                 tradition_cn = tradition_cn.replace('$','')
                 tradition_cn = tradition_cn.replace('^','')
                 tradition_cn = tradition_cn.replace(' & ',',')
+                tradition_cn = tradition_cn.replace('&',',')
                 
                 if tradition_cn == "":
                     test="doing nothing"
@@ -149,7 +151,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #movie_1['star'] = "Tom Hank"
                             #print(basic_info_dict[microorganism_name])
                     else:
@@ -163,7 +165,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])
                 
         ##########################################
@@ -186,6 +188,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                 tradition_cn = tradition_cn.replace('$','')
                 tradition_cn = tradition_cn.replace('^','')
                 tradition_cn = tradition_cn.replace(' & ',',')
+                tradition_cn = tradition_cn.replace('&',',')
                 if tradition_cn == "":
                     test="doing nothing"
                 elif r'中文名' in tradition_cn:
@@ -205,7 +208,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])
                     else:
                         gram_stain = ""
@@ -218,7 +221,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])
 
                 
@@ -243,6 +246,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                 tradition_cn = tradition_cn.replace('$','')
                 tradition_cn = tradition_cn.replace('^','')
                 tradition_cn = tradition_cn.replace(' & ',',')
+                tradition_cn = tradition_cn.replace('&',',')
                 #print(tradition_cn)
                 if tradition_cn == "":
                     test="doing nothing"
@@ -250,35 +254,38 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                     test="doing nothing"
                 else:
                     info = tradition_cn.split(",")
-                    
+                    #print(info)
+#['dsDNA', 'α乳頭瘤病毒7型', 'Alphapapillomavirus 7', '1516', '人乳頭瘤病毒18型', 'Human papillomavirus type 18', '1456 ']
                     if r'未發現' in info[0] :
                         test="doing nothing"
                     elif info[1] == "":
                         gram_stain = ""
-                        microorganism_name = info[4]
-                        chinses_name = info[3]
+                        species = info[2]
+                        microorganism_name = info[5]
+                        chinses_name = info[4]
                         top_type="virus"
                         if microorganism_name == "-":
                             microorganism_name = "unknown"
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
-                            #print(basic_info_dict[microorganism_name])
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,species,gram_stain,chinses_name,top_type)
+                            print(basic_info_dict[microorganism_name])
                     else:
                         gram_stain = ""
-                        genus = info[1]
-                        microorganism_name = info[4]
-                        chinses_name = info[3]
+                        genus = ""
+                        species = info[2]
+                        microorganism_name = info[5]
+                        chinses_name = info[4]
                         top_type="virus"
                         if microorganism_name == "-":
                             microorganism_name = "unknown"
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,species,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])  
-                    #print(info[0])
+                    #print(info)
 
         #############################################
         ##########                         ##########
@@ -301,6 +308,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                 tradition_cn = tradition_cn.replace('$','')
                 tradition_cn = tradition_cn.replace('^','')
                 tradition_cn = tradition_cn.replace(' & ',',')
+                tradition_cn = tradition_cn.replace('&',',')
                 #print(tradition_cn)
                 if tradition_cn == "":
                     test="doing nothing"
@@ -321,7 +329,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])
                     else:
                         gram_stain = ""
@@ -334,7 +342,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])                    
         
         
@@ -359,6 +367,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                 tradition_cn = tradition_cn.replace('$','')
                 tradition_cn = tradition_cn.replace('^','')
                 tradition_cn = tradition_cn.replace(' & ',',')
+                tradition_cn = tradition_cn.replace('&',',')
                 #print(tradition_cn)
                 if tradition_cn == "":
                     test="doing nothing"
@@ -379,7 +388,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])
                     else:
                         gram_stain = ""
@@ -392,7 +401,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])                    
         
         
@@ -418,6 +427,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                 tradition_cn = tradition_cn.replace('$','')
                 tradition_cn = tradition_cn.replace('^','')
                 tradition_cn = tradition_cn.replace(' & ',',')
+                tradition_cn = tradition_cn.replace('&',',')
                 #print(tradition_cn)
                 if tradition_cn == "":
                     test="doing nothing"
@@ -438,7 +448,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])
                     else:
                         gram_stain = ""
@@ -451,7 +461,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
                         elif microorganism_name == "":
                             microorganism_name = "unknown"
                         else:
-                            basic_info_dict[microorganism_name]=(microorganism_name,genus,gram_stain,chinses_name,top_type)
+                            basic_info_dict[microorganism_name]=(microorganism_name,genus,microorganism_name,gram_stain,chinses_name,top_type)
                             #print(basic_info_dict[microorganism_name])   
 
         ########################################
@@ -474,7 +484,7 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
             microorganism_name = sep2[2]
             description = sep2[3]
             discription_dic[microorganism_name]=(description)
-            
+            #print(microorganism_name,discription_dic[microorganism_name])
             
             
         #
@@ -487,8 +497,9 @@ with open (open_path ,mode = "r", encoding = "utf-8") as file:
             reference = match.group(3)
             reference_text=reference+",PMID:"+PMID
             reference_dict[ref_count] = (reference_text)
+            #print(reference_dict[ref_count])
             ref_count += 1
-
+print ()
 #print("microorganism_name\tgenus\tgram_stain\tchinses_name\ttop_type\tdescription")
 for i in basic_info_dict.keys():
     data_tuple=(basic_info_dict[i])
@@ -498,18 +509,25 @@ for i in basic_info_dict.keys():
     gram_stain = data_tuple[2]
     chinses_name = data_tuple[3]
     top_type = data_tuple[4]
-    description = discription_dic[microorganism_name]
-   
+    try:
+        description = discription_dic[microorganism_name]
+    except KeyError:
+        description = ""
     #$^[3]$。
+    #$^{\circ}$
+    description = description.replace('{','')
+    description = description.replace('}','')
     description = description.replace('^','')
+    description = description.replace('$\circ$','度')
     description_reserve = description
     description = description.replace('[','')
     description = description.replace(']','')
     description_list = description.split('$')
     description = description_reserve.replace('$','')
     
-    
-    if len(description_list) == 3:
+    if len(description_list) < 3:
+        reference_list = ""
+    elif len(description_list) == 3:
         reference1 = (description_list[1]+"."+reference_dict[int(description_list[1])])
         reference_list = (reference1)
     elif len(description_list) == 5:
@@ -535,10 +553,10 @@ for i in basic_info_dict.keys():
         reference5 = (description_list[9]+"."+reference_dict[int(description_list[11])])
         reference_list = (reference1+","+reference2+","+reference3+","+reference4+","+reference5)
     
-    print(microorganism_name+"\t"+genus+"\t"+gram_stain+"\t"+chinses_name+"\t"+top_type+"\t"+description+"\t\""+reference_list+"\"\t")
+    print(microorganism_name+"\t"+genus+"\t"+gram_stain+"\t"+chinses_name+"\t"+top_type+"\t"+halos_id+"\t"+sample_type+"\t"+description+"\t\""+reference_list+"\"\t")
 
 
-print ("\n")
+#print ("\n")
 '''
 for i in reference_dict.keys():
     print(str(i)+"."+reference_dict[i])
