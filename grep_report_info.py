@@ -608,11 +608,14 @@ for i in basic_info_dict.keys():
     description = description.replace('}','')
     description = description.replace('^','')
     description = description.replace('$\circ$','度')
+    description = description.replace('中國臺灣','臺灣')
+    description = description.replace('中國西藏','西藏')
     description_reserve = description
     description = description.replace('[','')
     description = description.replace(']','')
     description_list = description.split('$')
     description = description_reserve.replace('$','')
+    
     #print (len(description_list))
     #print (description_list)
     ### 0 reference
